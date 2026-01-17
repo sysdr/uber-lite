@@ -1,0 +1,6 @@
+com/uberlite/lesson01/rest/StateQueryServer.class
+com/uberlite/lesson01/rest/StateQueryServer$MetricsResponse.class
+com/uberlite/lesson01/postgres/PostgresLocationUpdater.class
+com/uberlite/lesson01/kafka/CustomRocksDbConfig.class
+com/uberlite/lesson01/kafka/KafkaLocationProducer.class
+com/uberlite/lesson01/Main.class

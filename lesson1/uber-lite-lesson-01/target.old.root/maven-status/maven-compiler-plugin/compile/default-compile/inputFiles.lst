@@ -1,0 +1,10 @@
+/workspace/src/main/java/com/uberlite/lesson01/Main.java
+/workspace/src/main/java/com/uberlite/lesson01/kafka/CustomRocksDbConfig.java
+/workspace/src/main/java/com/uberlite/lesson01/kafka/KafkaLocationProducer.java
+/workspace/src/main/java/com/uberlite/lesson01/kafka/LocationStateProcessor.java
+/workspace/src/main/java/com/uberlite/lesson01/loadgen/LoadGenerator.java
+/workspace/src/main/java/com/uberlite/lesson01/model/DriverLocation.java
+/workspace/src/main/java/com/uberlite/lesson01/model/LocationEvent.java
+/workspace/src/main/java/com/uberlite/lesson01/model/Metrics.java
+/workspace/src/main/java/com/uberlite/lesson01/postgres/PostgresLocationUpdater.java
+/workspace/src/main/java/com/uberlite/lesson01/rest/StateQueryServer.java
