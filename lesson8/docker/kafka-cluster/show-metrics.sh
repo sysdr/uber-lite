@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "=== Cluster metrics (run produce-demo.sh first for non-zero counts) ==="
+echo ""
+echo "Containers:"
+docker ps --filter "name=kafka-" --filter "name=zookeeper" --filter "name=schema-registry" --format "  {{.Names}}: {{.Status}}" 2>/dev/null || echo "  (cluster not running)"
+echo ""
+echo "Topic offsets (messages per partition):"
+docker exec kafka-1 kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic driver-locations 2>/dev/null | awk -F: '{sum+=$3} END {print "  driver-locations total: " sum+0}' || echo "  (topic empty or cluster down)"
+docker exec kafka-1 kafka-run-class kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic rider-locations 2>/dev/null | awk -F: '{sum+=$3} END {print "  rider-locations total: " sum+0}' || echo "  (topic empty or cluster down)"
+echo ""

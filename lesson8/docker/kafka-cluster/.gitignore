@@ -1,0 +1,49 @@
+# Build output
+target/
+build/
+dist/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+logs/
+*.tmp
+*.bak
+*.cache
+
+# No API keys or secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# Maven (if any Java added later)
+pom.xml.tag
+.mvn/timing.properties
