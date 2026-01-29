@@ -1,0 +1,39 @@
+# Build output
+build/
+target/
+*.class
+*.jar
+*.war
+
+# Gradle
+.gradle/
+.gradle-dist/
+!gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Python (dashboard)
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+/tmp/
+
+# Local / secrets (do not commit API keys or secrets)
+.env
+.env.local
+*.pem
+secrets/

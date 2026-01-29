@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.uberlite'
+version = '1.0.0'
+sourceCompatibility = '21'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    kafkaVersion = '3.9.0'
+    rocksdbVersion = '9.7.4'
+    h3Version = '4.1.1'
+    slf4jVersion = '2.0.9'
+}
+
+dependencies {
+    // Kafka Streams with explicit version
+    implementation "org.apache.kafka:kafka-streams:${kafkaVersion}"
+    implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
+    
+    // RocksDB for state stores
+    implementation "org.rocksdb:rocksdbjni:${rocksdbVersion}"
+    
+    // H3 for geospatial indexing
+    implementation "com.uber:h3:${h3Version}"
+    
+    // Logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
+    
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+configurations.all {
+    resolutionStrategy {
+        // Fail on version conflict instead of silent resolution
+        failOnVersionConflict()
+        
+        // Force specific versions for critical dependencies
+        force "org.apache.kafka:kafka-streams:${kafkaVersion}"
+        force "org.apache.kafka:kafka-clients:${kafkaVersion}"
+        force "org.rocksdb:rocksdbjni:${rocksdbVersion}"
+        force "com.uber:h3:${h3Version}"
+        force "org.slf4j:slf4j-api:${slf4jVersion}"
+        force "org.slf4j:slf4j-simple:${slf4jVersion}"
+    }
+}
+
+application {
+    mainClass = 'com.uberlite.deps.DependencyValidator'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
