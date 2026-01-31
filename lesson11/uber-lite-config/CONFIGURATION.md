@@ -1,0 +1,7 @@
+# Lesson 11: Configuration — Explanation
+
+**Spring Boot property resolution order.** Spring Boot loads, in order of increasing precedence: (1) default values in `application.yml`, (2) profile-specific files `application-{profile}.yml` that override the base, (3) environment variables, (4) system properties and command-line arguments. So production values (e.g. `KAFKA_BOOTSTRAP_SERVERS`, `STATE_STORE_DIR`) are supplied at runtime via env and never hardcoded in base or dev files.
+
+**Why localhost fails inside containers.** Inside a Docker container, `localhost` refers to that container only, not the host or other containers. Kafka brokers run in separate containers with their own hostnames (e.g. `kafka-broker-1`, `kafka-broker-2`). The app must use Docker DNS and those hostnames to reach the brokers. The dev profile overrides the base `localhost:9092` with `kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092` when running in or against Docker Compose.
+
+**Why Kafka Streams state-dir must be volume-mounted.** Kafka Streams stores local state (e.g. RocksDB) in `state-dir`. If that path is only on the container filesystem, it is ephemeral: container restart or replacement loses state and can cause full reprocessing and incorrect results. Mounting a persistent volume at the path used for `spring.kafka.streams.state-dir` (or `STATE_STORE_DIR`) ensures state survives restarts and is production-safe.

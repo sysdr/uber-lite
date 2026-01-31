@@ -1,0 +1,27 @@
+# application-prod.yml - Production. bootstrap-servers from env only. High-throughput tuning.
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    streams:
+      replication-factor: 3
+      properties:
+        num.stream.threads: 12
+        linger.ms: 10
+        batch.size: 32768
+        buffered.records.per.partition: 1000
+        cache.max.bytes.buffering: 104857600
+        commit.interval.ms: 30000
+        num.standby.replicas: 1
+    producer:
+      acks: all
+      compression-type: snappy
+      buffer-memory: 67108864
+    consumer:
+      fetch-min-size: 1048576
+
+logging:
+  level:
+    root: WARN
+    com.uberlite: INFO
+    org.apache.kafka: ERROR

@@ -1,0 +1,21 @@
+# application-dev.yml - Docker Compose friendly. Overrides base localhost for Docker.
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092}
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:kafka-broker-1:9092,kafka-broker-2:9092,kafka-broker-3:9092}
+    streams:
+      replication-factor: 1
+      properties:
+        num.stream.threads: 1
+        linger.ms: 0
+        batch.size: 16384
+        buffered.records.per.partition: 100
+        cache.max.bytes.buffering: 1048576
+        commit.interval.ms: 30000
+
+logging:
+  level:
+    root: INFO
+    com.uberlite: DEBUG
+    org.apache.kafka.streams: DEBUG
