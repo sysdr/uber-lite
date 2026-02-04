@@ -1,0 +1,12 @@
+#!/bin/sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -n "$GRADLE_HOME" ] && [ -x "$GRADLE_HOME/bin/gradle" ]; then
+    exec "$GRADLE_HOME/bin/gradle" "$@"
+elif command -v gradle >/dev/null 2>&1; then
+    exec gradle "$@"
+elif [ -x "$SCRIPT_DIR/.gradle-dist/gradle-8.5/bin/gradle" ]; then
+    exec "$SCRIPT_DIR/.gradle-dist/gradle-8.5/bin/gradle" "$@"
+else
+    echo "Gradle not found. Install Gradle or run setup.sh again (with network) to download it." >&2
+    exit 1
+fi

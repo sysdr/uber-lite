@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.uberlite'
+version = '1.0-SNAPSHOT'
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.kafka:kafka-clients:3.7.0'
+    implementation 'com.uber:h3:4.1.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.12'
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.testcontainers:testcontainers:1.19.7'
+    testImplementation 'org.testcontainers:kafka:1.19.7'
+}
+
+application {
+    mainClass = 'com.uberlite.batching.BatchingProducer'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.register('runProducer', JavaExec) {
+    mainClass = 'com.uberlite.batching.BatchingProducer'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('runMetricsServer', JavaExec) {
+    mainClass = 'com.uberlite.batching.MetricsServer'
+    classpath = sourceSets.main.runtimeClasspath
+}
