@@ -1,0 +1,20 @@
+# Build output
+target/
+*.class
+*.jar
+*.log
+
+# IDE
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Maven
+dependency-reduced-pom.xml
