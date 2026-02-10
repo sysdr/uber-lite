@@ -1,0 +1,32 @@
+# Build
+target/
+*.jar
+*.war
+dependency-reduced-pom.xml
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+.venv/
+venv/
+env/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/tmp/
+
+# Env / secrets (do not commit)
+.env
+.env.local
+*.pem
