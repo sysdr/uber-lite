@@ -1,0 +1,10 @@
+target/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.DS_Store
+.idea/
+*.iml
+.vscode/
+dependency-reduced-pom.xml
