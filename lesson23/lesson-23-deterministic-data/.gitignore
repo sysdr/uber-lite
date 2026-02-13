@@ -1,0 +1,25 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+
+# Maven
+dependency-reduced-pom.xml
+pom.xml.tag
+
+# Dashboard / runtime
+.dashboard_stats.json
+*.log
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Env / secrets (no API keys committed)
+.env
+.env.local
+*.pem
