@@ -1,0 +1,30 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+dependency-reduced-pom.xml
+
+# Logs
+*.log
+gc.log
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.venv/
+venv/
+env/
+
+# Local overrides (do not commit)
+.env
+.env.local
+*.local
