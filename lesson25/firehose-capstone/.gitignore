@@ -1,0 +1,28 @@
+# Build outputs
+target/
+*.class
+*.jar
+*.war
+!**/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+/tmp/
+/tmp/firehose_metrics.json
+
+# Local env (no secrets committed)
+.env
+.env.local
+*.pem
