@@ -1,0 +1,30 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# Maven
+.m2/
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local / env (no secrets in repo)
+.env
+.env.local
+*.local
