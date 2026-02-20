@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+MAVEN_PROJECTBASEDIR="${MAVEN_BASEDIR:-$(cd "$(dirname "$0")" && pwd)}"
+export MAVEN_PROJECTBASEDIR
+JAVACMD="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+exec "$JAVACMD" ${MAVEN_OPTS:--Xmx512m} -Dmaven.multiModuleProjectDirectory="$MAVEN_PROJECTBASEDIR" -classpath "$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar" org.apache.maven.wrapper.MavenWrapperMain "$@"

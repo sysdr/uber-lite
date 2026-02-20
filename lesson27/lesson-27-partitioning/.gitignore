@@ -1,0 +1,30 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# Logs and temp
+*.log
+/tmp/
+/tmp/lesson27*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local state (Kafka Streams RocksDB)
+/tmp/lesson27-state

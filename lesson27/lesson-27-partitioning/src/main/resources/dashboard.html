@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lesson 27 H3 Partitioning Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;margin:0;min-height:100vh;background:linear-gradient(180deg,#bae6fd 0%,#7dd3fc 50%,#0ea5e9 100%);color:#0c4a6e;padding:1.5rem}
+.container{max-width:900px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #0ea5e9}
+h1{margin:0;font-size:1.5rem;font-weight:700}
+.badge{background:#0ea5e9;color:#fff;padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.75rem;font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin:1.5rem 0}
+.card{background:rgba(255,255,255,0.85);border-radius:12px;padding:1.25rem;border:1px solid #0ea5e9}
+.card label{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:#0369a1;margin-bottom:0.25rem}
+.card .value{font-size:1.75rem;font-weight:700;color:#0c4a6e}
+.card.state .value{color:#0369a1}
+.links{margin-top:1.5rem;font-size:0.875rem}
+.links a{color:#0369a1;text-decoration:none;margin-right:1rem}
+.links a:hover{text-decoration:underline}
+.btn{margin-top:1rem;padding:0.6rem 1.2rem;background:#0ea5e9;color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer}
+.btn:hover{background:#0284c7;color:#fff}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+#demo-status{margin-left:0.5rem;font-size:0.85rem;color:#0369a1}
+.hint{color:#0369a1;font-size:0.8rem;margin-top:0.5rem}
+.graph-wrap{margin-top:1.5rem;background:rgba(255,255,255,0.85);border-radius:12px;padding:1rem;border:1px solid #0ea5e9}
+.graph-wrap h2{margin:0 0 0.5rem 0;font-size:1rem;color:#0369a1}
+.graph-wrap canvas{display:block;width:100%;height:200px;border-radius:8px}
+.graph-legend{font-size:0.75rem;color:#0369a1;margin-top:0.5rem}
+.graph-legend span{margin-right:1rem}
+</style></head><body>
+<div class="container">
+<header><h1>Lesson 27 H3 Partitioning Dashboard</h1><span class="badge">LIVE</span></header>
+<p><button class="btn" type="button" id="run-demo-btn">Run demo</button><span id="demo-status"></span></p>
+<div class="metrics">
+<div class="card state"><label>State</label><div class="value" id="m-state">__STATE__</div></div>
+<div class="card"><label>Active tasks</label><div class="value" id="m-tasks">__TASKS__</div></div>
+<div class="card"><label>Records consumed</label><div class="value" id="m-consumed">__CONSUMED__</div></div>
+<div class="card"><label>Records produced (matches)</label><div class="value" id="m-produced">__PRODUCED__</div></div>
+</div>
+<div class="links"><a href="/metrics">Raw metrics</a><a href="/health">Health</a></div>
+<p class="hint">Metrics auto-refresh every 0.5s. Click "Run demo" to send rider requests for 45s — metrics update in real time.</p>
+<div class="graph-wrap">
+<h2>Metrics over time</h2>
+<canvas id="metrics-graph"></canvas>
+<div class="graph-legend"><span style="color:#0c4a6e">— Records consumed</span> <span style="color:#0369a1">— Records produced (matches)</span></div>
+</div>
+</div>
+<script>
+var consumedHistory=[], producedHistory=[], maxPoints=60;
+function drawGraph(){
+  var c=document.getElementById('metrics-graph');
+  if(!c) return;
+  var rect=c.getBoundingClientRect();
+  if(rect.width&&rect.height){ c.width=rect.width; c.height=rect.height; }
+  var ctx=c.getContext('2d'), w=c.width, h=c.height, pad={t:20,r:40,b:30,l:50};
+  var gw=w-pad.l-pad.r, gh=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);
+  var all=consumedHistory.concat(producedHistory), maxVal=Math.max(1,Math.max.apply(null,all.length?all:[0]));
+  ctx.strokeStyle='#0ea5e9';
+  ctx.lineWidth=1;
+  ctx.strokeRect(pad.l,pad.t,gw,gh);
+  ctx.fillStyle='#0369a1';
+  ctx.font='10px system-ui';
+  ctx.fillText('0',pad.l-8,pad.t+gh+4);
+  ctx.fillText(String(maxVal),pad.l-8,pad.t-2);
+  function plot(arr,color){
+    if(arr.length<2) return;
+    ctx.strokeStyle=color;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    var step=gw/(maxPoints-1);
+    for(var i=0;i<arr.length;i++){
+      var x=pad.l+i*step, y=pad.t+gh-(arr[i]/maxVal)*gh;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  plot(consumedHistory,'#0c4a6e');
+  plot(producedHistory,'#0369a1');
+}
+function update(){fetch('/api/metrics',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
+document.getElementById('m-state').textContent=d.state;
+document.getElementById('m-tasks').textContent=d.activeTasks;
+document.getElementById('m-consumed').textContent=d.consumedTotal;
+document.getElementById('m-produced').textContent=d.producedTotal;
+consumedHistory.push(d.consumedTotal);
+producedHistory.push(d.producedTotal);
+if(consumedHistory.length>maxPoints){consumedHistory.shift();producedHistory.shift();}
+drawGraph();
+}).catch(function(){});}
+setInterval(update,500);
+update();
+document.getElementById('run-demo-btn').onclick=function(){
+  var btn=this, st=document.getElementById('demo-status');
+  btn.disabled=true; st.textContent='Starting…';
+  fetch('/run-demo',{method:'POST',cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
+    st.textContent=t;
+    setTimeout(function(){ btn.disabled=false; st.textContent=''; }, 5000);
+  }).catch(function(){ st.textContent='Error'; btn.disabled=false; });
+};
+</script>
+</body></html>
