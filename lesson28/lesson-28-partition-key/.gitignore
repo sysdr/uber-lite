@@ -1,0 +1,25 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+
+# Maven
+pom.xml.tag
+pom.properties
+.mvn/timing.properties
+
+# Classpath / IDE
+cp.txt
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
