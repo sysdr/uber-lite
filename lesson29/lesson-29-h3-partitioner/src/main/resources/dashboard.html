@@ -1,0 +1,85 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lesson 29 H3 Partitioner Dashboard</title>
+<style>
+*{box-sizing:border-box;}
+body{font-family:system-ui,-apple-system,sans-serif;margin:0;min-height:100vh;background:linear-gradient(160deg,#e0f2fe 0%,#bae6fd 40%,#7dd3fc 100%);color:#0c4a6e;padding:1.5rem;}
+.dash{max-width:960px;margin:0 auto;}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding:1rem 1.25rem;background:rgba(224,242,254,0.95);border-radius:12px;box-shadow:0 2px 12px rgba(14,165,233,0.2);border:1px solid rgba(14,165,233,0.3);}
+header h1{margin:0;font-size:1.35rem;font-weight:700;}
+.badge{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;padding:0.35rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:600;text-transform:uppercase;}
+.action-bar{margin-bottom:1.5rem;}
+.btn{padding:0.6rem 1.25rem;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
+.btn:hover{background:linear-gradient(180deg,#38bdf8,#0ea5e9);}
+.btn:disabled{opacity:0.7;cursor:not-allowed;}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;}
+.card{background:rgba(255,255,255,0.95);padding:1.25rem;border-radius:12px;box-shadow:0 2px 10px rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.2);}
+.card label{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:#0369a1;margin-bottom:0.35rem;}
+.card .value{font-size:1.75rem;font-weight:700;color:#0c4a6e;}
+.links{margin:1rem 0;font-size:0.9rem;}
+.links a{margin-right:0.75rem;padding:0.4rem 0.8rem;background:rgba(224,242,254,0.9);color:#0369a1;text-decoration:none;border-radius:6px;}
+.hint{color:#0369a1;font-size:0.85rem;}
+.graph-wrap{background:rgba(255,255,255,0.95);border-radius:12px;padding:1.25rem;margin-top:1.5rem;box-shadow:0 2px 10px rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.2);}
+.graph-wrap h2{margin:0 0 0.75rem 0;font-size:1rem;font-weight:600;color:#0369a1;}
+.graph-wrap canvas{display:block;width:100%;height:200px;border-radius:8px;background:rgba(224,242,254,0.4);}
+.graph-legend{font-size:0.75rem;color:#0369a1;margin:0.75rem 0 0 0;}
+</style></head><body>
+<div class="dash">
+<header><h1>Lesson 29 H3 Partitioner Dashboard</h1><span class="badge">Live</span></header>
+<div class="action-bar"><button class="btn" id="run-demo-btn">Run demo</button><span id="demo-status"></span></div>
+<div class="metrics">
+<div class="card"><label>State</label><div class="value" id="m-state">__STATE__</div></div>
+<div class="card"><label>Active tasks</label><div class="value" id="m-tasks">__TASKS__</div></div>
+<div class="card"><label>Records consumed</label><div class="value" id="m-consumed">__CONSUMED__</div></div>
+<div class="card"><label>Records produced</label><div class="value" id="m-produced">__PRODUCED__</div></div>
+</div>
+<p class="links"><a href="/metrics">Raw metrics</a><a href="/health">Health</a></p>
+<p class="hint">Metrics refresh every 1s. Click Run demo to send driver location events — values update in real time.</p>
+<div class="graph-wrap">
+  <h2>Metrics over time</h2>
+  <canvas id="metrics-graph"></canvas>
+  <p class="graph-legend"><span style="color:#0c4a6e">— Records consumed</span> <span style="color:#0369a1">— Records produced</span></p>
+</div>
+</div>
+<script>
+var consumedHistory=[], producedHistory=[], maxPoints=60;
+function drawGraph(){
+  var c=document.getElementById('metrics-graph');
+  if(!c) return;
+  var w=c.offsetWidth||400, h=200;
+  if(c.width!==w) c.width=w; c.height=h;
+  var ctx=c.getContext('2d'), pad={t:20,r:40,b:30,l:50}, gw=w-pad.l-pad.r, gh=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);
+  var all=consumedHistory.concat(producedHistory), maxVal=Math.max(1,Math.max.apply(null,all.length?all:[0]));
+  ctx.strokeStyle='#0ea5e9'; ctx.lineWidth=1; ctx.strokeRect(pad.l,pad.t,gw,gh);
+  ctx.fillStyle='#0369a1'; ctx.font='10px system-ui';
+  ctx.fillText('0',pad.l-8,pad.t+gh+4); ctx.fillText(String(maxVal),pad.l-8,pad.t-2);
+  function plot(arr,color){
+    if(arr.length<2) return;
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
+    var step=gw/(maxPoints-1);
+    for(var i=0;i<arr.length;i++){
+      var x=pad.l+i*step, y=pad.t+gh-(arr[i]/maxVal)*gh;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  plot(consumedHistory,'#0c4a6e'); plot(producedHistory,'#0369a1');
+}
+function update(){fetch('/api/metrics',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  document.getElementById('m-state').textContent=d.state;
+  document.getElementById('m-tasks').textContent=d.activeTasks;
+  document.getElementById('m-consumed').textContent=d.consumedTotal;
+  document.getElementById('m-produced').textContent=d.producedTotal;
+  consumedHistory.push(d.consumedTotal);
+  producedHistory.push(d.producedTotal);
+  if(consumedHistory.length>maxPoints){ consumedHistory.shift(); producedHistory.shift(); }
+  drawGraph();
+}).catch(()=>{});}
+setInterval(update,1000);update();
+document.getElementById('run-demo-btn').onclick=function(){
+  this.disabled=true; document.getElementById('demo-status').textContent='Starting…';
+  fetch('/run-demo',{method:'POST'}).then(r=>r.text()).then(t=>{
+    document.getElementById('demo-status').textContent=t;
+    setTimeout(function(){ document.getElementById('run-demo-btn').disabled=false; document.getElementById('demo-status').textContent=''; },8000);
+  }).catch(function(){ document.getElementById('run-demo-btn').disabled=false; document.getElementById('demo-status').textContent='Error'; });
+};
+</script></body></html>
