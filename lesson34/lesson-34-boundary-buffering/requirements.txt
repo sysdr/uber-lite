@@ -1,0 +1,9 @@
+# Lesson 34 Boundary Buffering — runtime / environment requirements
+# Dependencies are managed by Maven (see pom.xml).
+
+# Runtime
+Java >= 21
+Maven >= 3.8
+Docker and Docker Compose (for Kafka / Zookeeper)
+
+# Optional: use system Java and Maven; no pip install needed.

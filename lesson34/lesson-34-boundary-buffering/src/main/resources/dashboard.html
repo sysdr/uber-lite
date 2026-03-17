@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lesson 34 Boundary Buffering Dashboard</title>
+<style>
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;margin:0;min-height:100vh;background:linear-gradient(145deg,#0f172a 0%,#1e293b 35%,#0c4a6e 100%);color:#e2e8f0;padding:2rem;line-height:1.5;}
+.dash{max-width:1100px;margin:0 auto;}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem;padding:1.5rem 2rem;background:linear-gradient(135deg,rgba(30,41,59,0.9) 0%,rgba(15,23,42,0.95) 100%);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.3),0 0 0 1px rgba(148,163,184,0.1);}
+header h1{margin:0;font-size:1.6rem;font-weight:700;letter-spacing:-0.02em;color:#f8fafc;}
+.badge{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:0.4rem 0.9rem;border-radius:999px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;box-shadow:0 0 12px rgba(34,197,94,0.4);}
+.status-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;padding:0.75rem 1.25rem;background:rgba(30,41,59,0.7);border-radius:12px;font-size:0.9rem;border:1px solid rgba(148,163,184,0.15);backdrop-filter:blur(8px);}
+.status-dot{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px rgba(34,197,94,0.6);}
+.status-dot.off{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,0.5);}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;}
+.card{background:linear-gradient(180deg,rgba(51,65,85,0.6) 0%,rgba(30,41,59,0.8) 100%);padding:1.5rem 1.75rem;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);border:1px solid rgba(148,163,184,0.12);transition:transform 0.2s ease,box-shadow 0.2s ease;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.06);}
+.card label{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin-bottom:0.5rem;}
+.card .value{font-size:2rem;font-weight:800;color:#f8fafc;letter-spacing:-0.02em;}
+.action-bar{display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin:1.5rem 0;padding:1rem 0;}
+.btn{padding:0.6rem 1.25rem;background:linear-gradient(180deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;font-size:0.9rem;box-shadow:0 2px 8px rgba(37,99,235,0.3);transition:transform 0.15s ease,box-shadow 0.15s ease;}
+.btn:hover{background:linear-gradient(180deg,#60a5fa,#3b82f6);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,0.4);}
+.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.links a{margin-right:0.5rem;padding:0.5rem 1rem;background:rgba(51,65,85,0.8);color:#94a3b8;text-decoration:none;border-radius:10px;display:inline-block;border:1px solid rgba(148,163,184,0.2);transition:color 0.15s,background 0.15s;}
+.links a:hover{background:rgba(71,85,105,0.9);color:#f1f5f9;}
+#demo-status{color:#94a3b8;font-size:0.9rem;margin-left:0.25rem;}
+.hint{color:#94a3b8;font-size:0.875rem;padding:1rem 1.25rem;background:rgba(30,41,59,0.5);border-radius:12px;border:1px solid rgba(148,163,184,0.1);}
+.hint code{background:rgba(51,65,85,0.8);padding:0.2rem 0.5rem;border-radius:6px;font-size:0.85em;}
+.err{color:#f87171;font-size:0.875rem;margin-top:0.75rem;padding:0.75rem 1rem;background:rgba(127,29,29,0.2);border-radius:10px;border:1px solid rgba(248,113,113,0.2);}
+</style></head><body>
+<div class="dash">
+<header><h1>Lesson 34 Boundary Buffering Dashboard</h1><span class="badge">Live</span></header>
+<div class="status-bar"><span class="status-dot" id="status-dot"></span><span id="status-text">Checking…</span></div>
+<div class="metrics">
+<div class="card"><label>Total processed</label><div class="value" id="m-total">0</div></div>
+<div class="card"><label>Boundary hits</label><div class="value" id="m-hits">0</div></div>
+<div class="card"><label>Multicast copies</label><div class="value" id="m-copies">0</div></div>
+<div class="card"><label>Dedup drops</label><div class="value" id="m-drops">0</div></div>
+<div class="card"><label>Amplification ratio</label><div class="value" id="m-ratio">0.0000</div></div>
+</div>
+<div class="action-bar">
+  <button class="btn" id="btn-run-demo">Run demo</button>
+  <button class="btn" id="btn-refresh">Refresh now</button>
+  <a href="/raw-metrics" class="btn" target="_blank" style="text-decoration:none;">Raw metrics (7072)</a>
+  <a href="/health" class="btn" target="_blank" style="text-decoration:none;">Health</a>
+  <span id="demo-status"></span>
+</div>
+<p class="hint">Metrics refresh every 2s. Run <code>./start.sh</code> in the project folder to start BoundaryBufferingApp — values will update within 1–2 minutes.</p>
+<p class="err" id="err-msg" style="display:none;"></p>
+</div>
+<script>
+var statusEl=document.getElementById('status-dot'), statusText=document.getElementById('status-text'), errEl=document.getElementById('err-msg');
+function setStatus(up,msg){ statusEl.className='status-dot'+(up?'':' off'); statusText.textContent=msg; if(errEl){ errEl.style.display=msg.indexOf('disconnected')>=0?'block':'none'; errEl.textContent=up?'':'Start BoundaryBufferingApp: run ./start.sh in lesson-34-boundary-buffering'; }}
+function update(){
+  fetch('/api/source-status',{cache:'no-store'}).then(r=>r.json()).then(function(s){ setStatus(s.metricsSourceUp, s.metricsSourceUp?'Metrics source connected (BoundaryBufferingApp on :7072)':'Metrics source disconnected'); });
+  fetch('/api/metrics',{cache:'no-store'}).then(r=>r.json()).then(function(d){
+    if(d.error){ setStatus(false,'Metrics source disconnected'); return; }
+    document.getElementById('m-total').textContent=typeof d.totalProcessed!=='undefined'?d.totalProcessed:'-';
+    document.getElementById('m-hits').textContent=typeof d.boundaryHits!=='undefined'?d.boundaryHits:'-';
+    document.getElementById('m-copies').textContent=typeof d.multicastCopies!=='undefined'?d.multicastCopies:'-';
+    document.getElementById('m-drops').textContent=typeof d.dedupDrops!=='undefined'?d.dedupDrops:'-';
+    document.getElementById('m-ratio').textContent=typeof d.amplificationRatio!=='undefined'?Number(d.amplificationRatio).toFixed(4):'-';
+  }).catch(function(){ setStatus(false,'Metrics source disconnected'); });
+}
+document.getElementById('btn-refresh').onclick=function(){ update(); };
+document.getElementById('btn-run-demo').onclick=function(){
+  var btn=this, status=document.getElementById('demo-status');
+  btn.disabled=true; status.textContent=' Starting…';
+  fetch('/run-demo',{method:'POST'}).then(function(r){ return r.text(); }).then(function(t){
+    status.textContent=' Demo started. Metrics updating…';
+    setTimeout(function(){ btn.disabled=false; status.textContent=''; }, 5000);
+  }).catch(function(){ status.textContent=' Error'; btn.disabled=false; });
+};
+setInterval(update,2000);
+update();
+</script></body></html>
