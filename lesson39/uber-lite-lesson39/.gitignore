@@ -1,0 +1,15 @@
+target/
+target/**
+
+*.log
+dashboard.log
+app.log
+
+.idea/
+*.iml
+.vscode/
+*.swp
+*~
+.DS_Store
+
+.mvn/wrapper/maven-wrapper.jar

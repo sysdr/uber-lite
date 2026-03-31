@@ -1,0 +1,11 @@
+# Lesson 39 — Co-partitioning (Java / Kafka / Docker)
+#
+# This lesson does not use Python packages. Prerequisites:
+#   - Java 21+
+#   - Maven 3.9+
+#   - Docker 24+ (Docker Compose v2)
+#
+# Regenerate this project from the parent folder:
+#   cd .. && bash setup.sh
+#
+# See README.md for run/cleanup scripts.
